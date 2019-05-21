@@ -10,8 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",
-    "free-google-image-search": "^1.0.0",
-    "google-images": "^2.1.0",
     "slackbots": "^1.2.0"
   }
 }
