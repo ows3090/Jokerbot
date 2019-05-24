@@ -26,9 +26,12 @@ var url = "mongodb://localhost:27017/jokeapi";
 //     });
 //   });
 
+//
 MongoClient.connect(url).then((client) => {
 
     console.log('Connected correctly to server');
+}).catch((err)=> console.log(err));
+ /*
     const db = client.db(dbname);
 
     dboperation.insertDocument(db, jokedoc, collec)
@@ -40,4 +43,4 @@ MongoClient.connect(url).then((client) => {
         .catch((err) => console.log(err));
 
 })
-.catch((err) => console.log(err));
+*/

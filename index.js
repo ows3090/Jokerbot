@@ -36,31 +36,31 @@ bot.on('message', (data) => {
 function handleMessage(message){
     if(message.includes('chucknorris')){
         route.chuckJoke()
-        .then((err, res)=>{
+        .then((err, data)=>{
             if(err)throw err;
-            res("ChuckJoke function activated");
+            console.log("ChuckJoke function activated");
         });
     }
     else if(message.includes(' yomama')){
         route.yoMamaJoke()
-        .then((err, res)=>{
+        .then((err, data)=>{
             if(err)throw err;
-            res("yoMamaJoke function activated");
+            console.log("yoMamaJoke function activated");
 });
     }
     else if(message.includes(' random')){
         route.randomJoke()
-        .then((err, res)=>{
-            if(err)throw err
-            res("randomJoke function activated");    
+        .then((err, data)=>{
+            if(err)throw err;
+            console.log("randomJoke function activated");    
     });
 }
 
     else if(message.includes(' help')){
         route.runHelp()
-        .then((err, res)=>{
-            if(err)throw err
-            res(" function activated");  
+        .then((err, data)=>{
+            if(err)throw err;
+            console.log(" function activated");  
     });
     }
 }
