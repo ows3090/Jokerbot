@@ -1,9 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 const SlackBot = require('slackbots');
-const dboperation = require('../operations');
 const dbname =  'jokeapi';
 const collec = 'jokes';
-const functions = require('../functions');
 const url = 'mongodb://localhost:27017/';
 
 exports.startbot = ()=>{

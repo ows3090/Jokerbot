@@ -1,5 +1,4 @@
 const MongoClient = require('mongodb').MongoClient;
-const dboperation = require('./operations');
 const jokedoc = require('./jokes/jokes.json');
 const dbname =  'jokeapi';
 const collec = 'jokes';
@@ -42,6 +41,18 @@ var url = "mongodb://localhost:27017/jokeapi";
 
 // })
 // .catch((err) => console.log(err));
+
+
+
+
+
+
+
+
+
+
+
+
 
 // //will encapsulate all that database operations
 // const assert = require('assert');

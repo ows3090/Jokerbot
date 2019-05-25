@@ -2,7 +2,6 @@ const SlackBot = require('slackbots');
 const axios = require('axios');
 const route = require('./Routers/route');
 const MongoClient = require('mongodb').MongoClient;
-const functions = require('./functions');
 const url = 'mongodb://localhost:27017/';
 
 
