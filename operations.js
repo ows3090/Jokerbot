@@ -6,9 +6,9 @@ exports.insertDocument = (db, document, collection, callback) =>{
     return coll.insert(document);
 };
 
-exports.findDocuments = (db, collection, callback)=>{
+exports.findDocuments = (db, collection, input)=>{
     const coll = db.collection(collection);
-    return coll.find({}).toArray();
+    return coll.find({"type": input}).toArray();
 }
 
 exports.removeDocuments = (db, document , collection, callback)=>{
@@ -19,4 +19,11 @@ exports.removeDocuments = (db, document , collection, callback)=>{
 exports.updateDocuments = (db, document , update ,collection, callback)=>{
     const coll = db.collection(collection);
     return coll.updateOne(document, {$set: update}, null);
+}
+
+exports.getdata = (db, collection, input, callback) =>{
+    const coll = db.collection(collection);
+    result= coll.find({"type": input});
+    console.log(result);
+    return result;
 }

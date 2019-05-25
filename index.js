@@ -2,8 +2,12 @@ const SlackBot = require('slackbots');
 const axios = require('axios');
 const route = require('./Routers/route');
 
+const MongoClient = require('mongodb').MongoClient;
+
+const url = 'mongodb://localhost:27017/';
+
 const bot = new SlackBot({
-    token : "xoxb-582582124755-587875604934-rRhFVlXlB0StEMnlrmsQlcac",
+    token : "xoxb-582582124755-587875604934-EWnGacmzNvfVQk2XvhteoIzw",
     name : "Joker"
 });
 
@@ -34,33 +38,56 @@ bot.on('message', (data) => {
 
 // Responding to Data
 function handleMessage(message){
-    if(message.includes('chucknorris')){
-        route.chuckJoke()
-        .then((err, data)=>{
-            if(err)throw err;
-            console.log("ChuckJoke function activated");
-        });
+
+    if(message.includes(' yomama')){
+        route.startdb.yomamaJoke();
     }
-    else if(message.includes(' yomama')){
-        route.yoMamaJoke()
-        .then((err, data)=>{
-            if(err)throw err;
-            console.log("yoMamaJoke function activated");
-});
+    else if(message.includes(' general')){
+        route.randomJoke();
     }
+
     else if(message.includes(' random')){
-        route.randomJoke()
-        .then((err, data)=>{
-            if(err)throw err;
-            console.log("randomJoke function activated");    
-    });
+        randomJoke();
+    }
+    
+    else if(message.includes(' programming')){
+      route.startdb()
+   
+    }
+    else if(message.includes(' help')){
+        route.startdb.runHelp();
+    }
 }
 
-    else if(message.includes(' help')){
-        route.runHelp()
-        .then((err, data)=>{
-            if(err)throw err;
-            console.log(" function activated");  
-    });
+randomJoke= ()=>{
+    MongoClient.connect('mongodb://localhost:27017', function (err, client){
+    if (err) throw err; 
+    var db = client.db('jokeapi');
+
+    json_max = 376;
+    function getRandomInt() {
+        min = Math.ceil(1);
+        max = Math.floor(376);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+    random = getRandomInt();
+    result = db.collection('jokes').findOne({id: random});   
+    
+    user = result;
+    user.then(function(total){
+        question = total.setup;
+        joke = total.punchline;
+        const face = {
+            icon_emoji: ':laughing:'
+        };
+        
+        bot.postMessageToChannel('everyone', joke, face);
+        bot.postMessageToChannel('full-stack-web', joke, face);
+        bot.postMessageToChannel('bot_test', joke, face);
+        bot.postMessageToChannel('everyone', question, face);
+        bot.postMessageToChannel('full-stack-web', question, joke, face);
+        bot.postMessageToChannel('bot_test', question, face);
+    })
+    client.close();
+    })
 }

@@ -1,21 +1,18 @@
 const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
 const dboperation = require('./operations');
 const jokedoc = require('./jokes/jokes.json');
-const url = 'mongodb://localhost:27017/';
 const dbname =  'jokeapi';
 const collec = 'jokes';
 
 var url = "mongodb://localhost:27017/jokeapi";
 
-// Code for Creating database
+// Create database
 // MongoClient.connect(url, function(err, db) {
 //   if (err) throw err;
 //   console.log("Database created!");
 //   db.close();
 // });
 
-// Code for Creating a Collection
 // MongoClient.connect(url, function(err, db) {
 //     if (err) throw err;
 //     var dbo = db.db("jokeapi");
@@ -26,21 +23,50 @@ var url = "mongodb://localhost:27017/jokeapi";
 //     });
 //   });
 
-//
-MongoClient.connect(url).then((client) => {
 
-    console.log('Connected correctly to server');
-}).catch((err)=> console.log(err));
- /*
-    const db = client.db(dbname);
+// Storing data jokes.json data into mongodb
+// MongoClient.connect(url).then((client) => {
 
-    dboperation.insertDocument(db, jokedoc, collec)
-        .then((result) => {
-            console.log("Inserted Document:\n", result.ops);
+//     console.log('Connected correctly to server');
+ 
+ 
+//     const db = client.db(dbname);
 
-            return dboperation.findDocuments(db, collec);
-        })
-        .catch((err) => console.log(err));
+//     dboperation.insertDocument(db, jokedoc, collec)
+//         .then((result) => {
+//             console.log("Inserted Document:\n", result.ops);
 
-})
-*/
+//             return dboperation.findDocuments(db, collec);
+//         })
+//         .catch((err) => console.log(err));
+
+// })
+// .catch((err) => console.log(err));
+
+// //will encapsulate all that database operations
+// const assert = require('assert');
+
+// exports.insertDocument = (db, document, collection, callback) =>{
+//     const coll = db.collection(collection);
+//     return coll.insert(document);
+// };
+
+// exports.findDocuments = (db, collection, input,callback)=>{
+//     const coll = db.collection(collection);
+//     return coll.find({"type": input}).toArray();
+// }
+
+// exports.removeDocuments = (db, document , collection, callback)=>{
+//     const coll = db.collection(collection);
+//     return coll.deleteone(document);
+// }
+
+// exports.updateDocuments = (db, document , update ,collection, callback)=>{
+//     const coll = db.collection(collection);
+//     return coll.updateOne(document, {$set: update}, null);
+// }
+
+// exports.getdata = (db, document, collection, input, callback =>{
+//     result = findDocuments(db,collection);
+//     return result;
+// })
