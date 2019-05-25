@@ -7,7 +7,7 @@ const MongoClient = require('mongodb').MongoClient;
 const url = 'mongodb://localhost:27017/';
 
 const bot = new SlackBot({
-    token : "xoxb-582582124755-587875604934-EWnGacmzNvfVQk2XvhteoIzw",
+    token : "xoxb-582582124755-587875604934-mceAxq9E58uHT4WRkqSbcibU",
     name : "Joker"
 });
 
@@ -80,13 +80,23 @@ randomJoke= ()=>{
         const face = {
             icon_emoji: ':laughing:'
         };
+        function firstFunction(channel){
+            bot.postMessageToChannel(channel, joke, face);
+            console.log("허무개그 전송~~~~!");
+        }
         
-        bot.postMessageToChannel('everyone', joke, face);
-        bot.postMessageToChannel('full-stack-web', joke, face);
-        bot.postMessageToChannel('bot_test', joke, face);
-        bot.postMessageToChannel('everyone', question, face);
-        bot.postMessageToChannel('full-stack-web', question, joke, face);
-        bot.postMessageToChannel('bot_test', question, face);
+        function secondFunction(channel, callback){
+            bot.postMessageToChannel(channel, question, face);
+            console.log("질문 불려짐")
+            firstFunction(channel);
+        }
+        secondFunction('everyone',firstFunction);
+        // bot.postMessageToChannel('everyone', question, face);
+        // bot.postMessageToChannel('full-stack-web', question, joke, face);
+        // bot.postMessageToChannel('bot_test', question, face);
+        // bot.postMessageToChannel('everyone', joke, face);
+        // bot.postMessageToChannel('full-stack-web', joke, face);
+        // bot.postMessageToChannel('bot_test', joke, face);
     })
     client.close();
     })
