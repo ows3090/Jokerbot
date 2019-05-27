@@ -203,17 +203,17 @@ programmingJoke= ()=>{
         })
         client.close();
         })
-    }
+    };
 
 knockknockJoke= ()=>{
-        MongoClient.connect(url, function (err, client){
+    MongoClient.connect(url, function (err, client){
         if (err) throw err; 
         var db = client.db('jokeapi');
     
-        json_max = 376;
+        json_max = 61;
         function getRandomInt() {
             min = Math.ceil(1);
-            max = Math.floor(376);
+            max = Math.floor(json_max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
         random = getRandomInt();
@@ -232,7 +232,7 @@ knockknockJoke= ()=>{
                 }
                 else if(total.type != "knock-knock"){
                     client.close();
-                    programmingJoke();
+                    knockknockJoke();
                 }
             
             // bot.postMessageToChannel('everyone', question, face);
@@ -245,14 +245,13 @@ knockknockJoke= ()=>{
         .then((joke_info)=>{
             function askQuestion(){
                 bot.postMessageToChannel(joke_info[3], joke_info[0], joke_info[2]);
-                console.log("프로그래밍 질문 불려짐");
+                console.log("똑똑 질문 불려짐");
             }
             askQuestion();
             return joke_info;
         })
         .then((info)=>{
             bot.postMessageToChannel(info[3], info[1], info[2]);
-            return;
         })
         client.close();
         })
