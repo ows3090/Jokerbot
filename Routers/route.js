@@ -7,7 +7,7 @@ const url = 'mongodb://localhost:27017/';
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "",
+        token : "xoxb-582582124755-587875604934-86ISu22wmEaDhGWtQmpvumbR",
         name : "Joker"
     });
     
@@ -36,14 +36,15 @@ bot.on('message', (data) => {
 // Responding to Data
 function handleMessage(message){
 
-    if(message.includes(' yomama')){
-        yomamaJoke();
+    if(message.includes(' knockknock')){
+        knockknockJoke();
     }
     else if(message.includes(' general')){
         generalJoke();
     }
 
     else if(message.includes(' random')){
+        console.log(message);
         randomJoke();
     }
     
@@ -169,31 +170,89 @@ programmingJoke= ()=>{
                 if(total.type === "programming"){
                     question = total.setup;
                     joke = total.punchline;
+                    channel = 'everyone';
+                    const face = {
+                        icon_emoji: ':laughing:'
+                    };
+                    ques_and_joke = [question, joke, face, channel];
+                    return ques_and_joke;
                 }
                 else if(total.type != "programming"){
                     client.close();
                     programmingJoke();
                 }
             
-            const face = {
-                icon_emoji: ':laughing:'
-            };
-            function firstFunction(channel){
-                bot.postMessageToChannel(channel, joke, face);
-                console.log("프로그래밍 허무개그 전송~~~~!");
-            }
-            
-            function secondFunction(channel, callback){
-                bot.postMessageToChannel(channel, question, face);
-                console.log("프로그래밍 질문 불려짐")
-            }
-            secondFunction('everyone').then(firstFunction('everyone'));
             // bot.postMessageToChannel('everyone', question, face);
             // bot.postMessageToChannel('full-stack-web', question, joke, face);
             // bot.postMessageToChannel('bot_test', question, face);
             // bot.postMessageToChannel('everyone', joke, face);
             // bot.postMessageToChannel('full-stack-web', joke, face);
             // bot.postMessageToChannel('bot_test', joke, face);
+        })
+        .then((joke_info)=>{
+            function askQuestion(){
+                bot.postMessageToChannel(joke_info[3], joke_info[0], joke_info[2]);
+                console.log("프로그래밍 질문 불려짐");
+            }
+            askQuestion();
+            return joke_info;
+        })
+        .then((info)=>{
+            bot.postMessageToChannel(info[3], info[1], info[2]);
+            return;
+        })
+        client.close();
+        })
+    }
+
+knockknockJoke= ()=>{
+        MongoClient.connect(url, function (err, client){
+        if (err) throw err; 
+        var db = client.db('jokeapi');
+    
+        json_max = 376;
+        function getRandomInt() {
+            min = Math.ceil(1);
+            max = Math.floor(376);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        random = getRandomInt();
+        result = db.collection('jokes').findOne({id: random});   
+        user = result;
+        user.then(function(total){
+                if(total.type === "knock-knock"){
+                    question = total.setup;
+                    joke = total.punchline;
+                    channel = 'everyone';
+                    const face = {
+                        icon_emoji: ':laughing:'
+                    };
+                    ques_and_joke = [question, joke, face, channel];
+                    return ques_and_joke;
+                }
+                else if(total.type != "knock-knock"){
+                    client.close();
+                    programmingJoke();
+                }
+            
+            // bot.postMessageToChannel('everyone', question, face);
+            // bot.postMessageToChannel('full-stack-web', question, joke, face);
+            // bot.postMessageToChannel('bot_test', question, face);
+            // bot.postMessageToChannel('everyone', joke, face);
+            // bot.postMessageToChannel('full-stack-web', joke, face);
+            // bot.postMessageToChannel('bot_test', joke, face);
+        })
+        .then((joke_info)=>{
+            function askQuestion(){
+                bot.postMessageToChannel(joke_info[3], joke_info[0], joke_info[2]);
+                console.log("프로그래밍 질문 불려짐");
+            }
+            askQuestion();
+            return joke_info;
+        })
+        .then((info)=>{
+            bot.postMessageToChannel(info[3], info[1], info[2]);
+            return;
         })
         client.close();
         })
