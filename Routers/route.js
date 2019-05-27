@@ -7,7 +7,7 @@ const url = 'mongodb://localhost:27017/';
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "xoxb-582582124755-587875604934-86ISu22wmEaDhGWtQmpvumbR",
+        token : "",
         name : "Joker"
     });
     
@@ -70,27 +70,35 @@ randomJoke= ()=>{
     user = result;
     user.then(function(total){
         question = total.setup;
-        joke = total.punchline;
         const face = {
             icon_emoji: ':laughing:'
         };
-        function firstFunction(channel){
-            bot.postMessageToChannel(channel, joke, face);
-            console.log("허무개그 전송~~~~!");
-        }
         
-        function secondFunction(channel, callback){
+        function firstFunction(channel){
             bot.postMessageToChannel(channel, question, face);
-            console.log("질문 불려짐")
-            firstFunction(channel);
         }
-        secondFunction('everyone',firstFunction);
+        firstFunction('everyone');
+        console.log('질문 불려짐');
+        return total;
+
+
         // bot.postMessageToChannel('everyone', question, face);
         // bot.postMessageToChannel('full-stack-web', question, joke, face);
         // bot.postMessageToChannel('bot_test', question, face);
         // bot.postMessageToChannel('everyone', joke, face);
         // bot.postMessageToChannel('full-stack-web', joke, face);
         // bot.postMessageToChannel('bot_test', joke, face);
+    })
+    .then((all)=>{
+        joke = all.punchline;
+        const face = {
+            icon_emoji: ':laughing:'
+        };
+        function secondFunction(channel){
+            bot.postMessageToChannel(channel, joke, face);
+            console.log( "허무개그 전송~~~~!")
+        }
+        secondFunction('everyone');
     })
     client.close();
     })
@@ -178,9 +186,8 @@ programmingJoke= ()=>{
             function secondFunction(channel, callback){
                 bot.postMessageToChannel(channel, question, face);
                 console.log("프로그래밍 질문 불려짐")
-                firstFunction(channel);
             }
-            secondFunction('everyone',firstFunction);
+            secondFunction('everyone').then(firstFunction('everyone'));
             // bot.postMessageToChannel('everyone', question, face);
             // bot.postMessageToChannel('full-stack-web', question, joke, face);
             // bot.postMessageToChannel('bot_test', question, face);
