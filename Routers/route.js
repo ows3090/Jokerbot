@@ -1,13 +1,14 @@
 const MongoClient = require('mongodb').MongoClient;
-const SlackBot = require('slackbots');
+const SlackBot = require('slackbots'); //link : https://github.com/mishk0/slack-bot-api
 const dbname =  'jokeapi';
 const emoji = require('../slack_emoji');
 const url = 'mongodb://localhost:27017/';
 
+
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "xoxb-582582124755-587875604934-t3xDZmtuLXVjgUMWDzAf8g1K",
+        token : "xoxb-582582124755-587875604934-PR0QcCuQpOXXggtUN53ytfhH",
         name : "Joker"
     });
     
@@ -18,6 +19,7 @@ exports.startbot = ()=>{
         channel.then((data)=>{
         channel_length = data.channels.length; 
         for(i=0; i< channel_length; ++i){
+            //postMessageToChannel(name, message [, params, callback]) (return: promise) - posts a message to channel by name.
             bot.postMessageToChannel(data.channels[i].name, 'Have some fun with @Joker!\nFor commands write @joker --help'
         , emoji.emojis('bowtie'));
         }
@@ -81,7 +83,7 @@ function handleMessage(message, current_channel){
     console.log(message);
 
 //Handles message response depending on the user message
-    if(message.includes(' tell me')){
+    if(message.includes(' tell me') || message.includes(' Tell me')){
         if(message.includes(' knock')){
             knockknockJoke(current_channel);
         }
@@ -89,10 +91,7 @@ function handleMessage(message, current_channel){
             generalJoke(current_channel);
         }
 
-        else if(message.includes(' random')){
-            randomJoke(current_channel);
-        }
-        else if(message.includes(' a joke')){
+        else if(message.includes(' random') || message.includes(' some joke') || message.includes(' funny joke')){
             randomJoke(current_channel);
         }
     
@@ -139,35 +138,37 @@ function getRandomInt(max_num) {
 
 //Function for giving out random joke
 randomJoke= (user_channel)=>{
+    //Connect to mongodb client
     MongoClient.connect('mongodb://localhost:27017', function (err, client){
     if (err) throw err; 
+    //go into database name jokeapi
     var db = client.db('jokeapi');
 
+    //set the maximum number of api formats and get a random integer
     json_max = 376;
     random = getRandomInt(json_max);
+    //Go to jokes collection inside jokeapi database and find one joke randomly by putting a random number
     result = db.collection('jokes').findOne({id: random});   
     
     user = result;
+    //After finding one joke, use promise to run codes synchronously
     user.then(function(total){
         question = total.setup;
-        
-        function firstFunction(){
-            bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
-        }
-        firstFunction('everyone');
+        //Ask the question first by extracting 'setup' section from api format
+        bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
         console.log('질문 불려짐');
         return total;
-
-
     })
     .then((all)=>{
         joke = all.punchline;
+        //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
         setTimeout(function secondFunction(){
            bot.postMessageToChannel(user_channel, `${joke}:stuck_out_tongue_winking_eye::laughing:`, emoji.emojis('laughing'))
             console.log( "허무개그 전송~~~~!")
         }, 3000);
         
     })
+    //close mongodb
     client.close();
     })
 }
@@ -182,6 +183,7 @@ generalJoke= (user_channel)=>{
         random = getRandomInt(json_max);
         result = db.collection('jokes').findOne({id: random});   
         user = result;
+        //if the random picked api type is not general execute the function from the start to get another format for general type
         user.then(function(total){
                 if(total.type === "general"){
                     question = total.setup;
