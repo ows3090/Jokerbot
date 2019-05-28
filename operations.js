@@ -20,10 +20,3 @@ exports.updateDocuments = (db, document , update ,collection, callback)=>{
     const coll = db.collection(collection);
     return coll.updateOne(document, {$set: update}, null);
 }
-
-exports.getdata = (db, collection, input, callback) =>{
-    const coll = db.collection(collection);
-    result= coll.find({"type": input});
-    console.log(result);
-    return result;
-}
