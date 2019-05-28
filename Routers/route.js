@@ -7,7 +7,7 @@ const url = 'mongodb://localhost:27017/';
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "xoxb-582582124755-587875604934-86ISu22wmEaDhGWtQmpvumbR",
+        token : "xoxb-582582124755-587875604934-oewQRL6lzHXLkybUrg4CWJVJ",
         name : "Joker"
     });
     
@@ -36,11 +36,7 @@ bot.on('message', (data) => {
 // Responding to Data
 function handleMessage(message, channel, user){
     console.log(message);
-    console.log(channel);
-    console.log(user);
 
-    if(message === `${user} hi`)
-        bot.postMessageToChannel('everyone', "Tell you what??? :nomouth:", embarrased);
     if(message.includes(' tell me')){
         if(message.includes(' knock')){
             knockknockJoke();
@@ -50,7 +46,9 @@ function handleMessage(message, channel, user){
         }
 
         else if(message.includes(' random')){
-            console.log(message);
+            randomJoke();
+        }
+        else if(message.includes(' a joke')){
             randomJoke();
         }
     
@@ -73,7 +71,7 @@ function handleMessage(message, channel, user){
     else if(message.includes(' help')){
         
     }
-    else if(message.includes(' what jokes' || ' What jokes' || ' which jokes')){
+    else if(message.includes(' what jokes')){
         jokeTypes = ["general", 'programming', 'knock-knock'];
         const face = {
             icon_emoji: ':thumbsup:'
@@ -134,63 +132,63 @@ randomJoke= ()=>{
         const face = {
             icon_emoji: ':laughing:'
         };
-        function secondFunction(channel){
-           setTimeout(bot.postMessageToChannel(channel, joke, face, 7000));
+        setTimeout(function secondFunction(){
+           bot.postMessageToChannel('everyone', `${joke}:stuck_out_tongue_winking_eye::laughing:`, face)
             console.log( "허무개그 전송~~~~!")
-        }
-        secondFunction('everyone');
+        }, 3000);
+        
     })
     client.close();
     })
 }
 generalJoke= ()=>{
-        MongoClient.connect(url, function (err, client){
+    MongoClient.connect(url, function (err, client){
         if (err) throw err; 
         var db = client.db('jokeapi');
     
         json_max = 376;
         function getRandomInt() {
             min = Math.ceil(1);
-            max = Math.floor(376);
+            max = Math.floor(json_max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
         random = getRandomInt();
         result = db.collection('jokes').findOne({id: random});   
-        
         user = result;
         user.then(function(total){
-            if(total.type != "general"){
-                client.close();
-                programmingJoke();
-            }
-            else if(total.type === "general"){
-                question = total.setup;
-                joke = total.punchline;
-            }   
-            const face = {
-                icon_emoji: ':laughing:'
-            };
-            function firstFunction(channel){
-                bot.postMessageToChannel(channel, joke, face);
-                console.log("일반 허무개그 전송~~~~!");
-            }
+                if(total.type === "general"){
+                    question = total.setup;
+                    joke = total.punchline;
+                    channel = 'everyone';
+                    const face = {
+                        icon_emoji: ':laughing:'
+                    };
+                    ques_and_joke = [question, joke, face, channel];
+                    return ques_and_joke;
+                }
+                else if(total.type != "general"){
+                    client.close();
+                    generalJoke();
+                }
             
-            function secondFunction(channel, callback){
-                bot.postMessageToChannel(channel, question, face);
-                console.log("일반 질문 불려짐")
-                firstFunction(channel);
+        })
+        .then((joke_info)=>{
+            function askQuestion(){
+                bot.postMessageToChannel(joke_info[3], joke_info[0], joke_info[2]);
+                console.log("일반 질문 불려짐");
             }
-            secondFunction('everyone',firstFunction);
-            // bot.postMessageToChannel('everyone', question, face);
-            // bot.postMessageToChannel('full-stack-web', question, joke, face);
-            // bot.postMessageToChannel('bot_test', question, face);
-            // bot.postMessageToChannel('everyone', joke, face);
-            // bot.postMessageToChannel('full-stack-web', joke, face);
-            // bot.postMessageToChannel('bot_test', joke, face);
+            askQuestion();
+            return joke_info;
+        })
+        .then((info)=>{
+            setTimeout(function secondFunction(){
+                bot.postMessageToChannel(info[3], `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, info[2])
+                 console.log( "허무개그 전송~~~~!")
+             }, 3000);
         })
         client.close();
         })
-    }
+    };
 programmingJoke= ()=>{
         MongoClient.connect(url, function (err, client){
         if (err) throw err; 
@@ -237,8 +235,10 @@ programmingJoke= ()=>{
             return joke_info;
         })
         .then((info)=>{
-            bot.postMessageToChannel(info[3], info[1], info[2]);
-            return;
+            setTimeout(function secondFunction(){
+                bot.postMessageToChannel(info[3], `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, info[2])
+                 console.log( "허무개그 전송~~~~!")
+             }, 3000);
         })
         client.close();
         })
@@ -274,12 +274,6 @@ knockknockJoke= ()=>{
                     knockknockJoke();
                 }
             
-            // bot.postMessageToChannel('everyone', question, face);
-            // bot.postMessageToChannel('full-stack-web', question, joke, face);
-            // bot.postMessageToChannel('bot_test', question, face);
-            // bot.postMessageToChannel('everyone', joke, face);
-            // bot.postMessageToChannel('full-stack-web', joke, face);
-            // bot.postMessageToChannel('bot_test', joke, face);
         })
         .then((joke_info)=>{
             function askQuestion(){
@@ -290,19 +284,22 @@ knockknockJoke= ()=>{
             return joke_info;
         })
         .then((info)=>{
-            bot.postMessageToChannel(info[3], info[1], info[2]);
+            setTimeout(function secondFunction(){
+                bot.postMessageToChannel(info[3], `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, info[2])
+                 console.log( "허무개그 전송~~~~!")
+             }, 3000);
         })
         client.close();
         })
     }
 runHelp = () =>{
-    function runhelp(){
-        const face = {
-            icon_emoji: ':question:'
-        };
-        comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker --help'\nBot functions: @joker tell me [something] "
-        bot.postMessageToChannel('everyone', "Type @joker and write a joke that you would like\n ex- @joker random",face);
-    }
+    
+    const face = {
+        icon_emoji: ':question:'
+    };
+    comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker --help'\nBot functions: @joker tell me [something] "
+    bot.postMessageToChannel('everyone', "Type @joker and write a joke that you would like\n ex- @joker random",face);
+    
 }
 }
 
