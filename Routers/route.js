@@ -16,8 +16,19 @@ exports.startbot = ()=>{
         const face = {
             icon_emoji: ':bowtie:'
         };
-        bot.postMessageToChannel('everyone', 'Have some fun with @Joker!\nFor commands write @joker --help'
-        , face, '/play secret');
+        //Figure out user's all current channels and send the starting message
+        channel = bot.getChannels();
+        channel.then((data)=>{
+        channel_length = data.channels.length; 
+        for(i=0; i< channel_length; ++i){
+            bot.postMessageToChannel(data.channels[i].name, 'Have some fun with @Joker!\nFor commands write @joker --help'
+        , face);
+        }
+        return data;
+    })
+    .then((data)=>{
+        console.log('Sucessfully started app to all channels');
+    })  
     });
     // Error Handler
     bot.on('error', (err) => console.log(err));
@@ -27,43 +38,80 @@ bot.on('message', (data) => {
     if(data.type !== 'message'){
         return;
     }
-    
-    console.log(data);
-    handleMessage(data.text, data.channel, data.user);
+    status = data;
+    message_recieved = 0;
+    //If it's first input from the user, go through this loop to store the data of channel names and ids
+    if(message_recieved == 0){
+        channel_length;
+        channel_names = [];
+        channel_ids = []; 
+
+        channel = bot.getChannels();
+        channel.then((data)=>{
+            channel_length = data.channels.length;
+            for(i=0; i< channel_length; ++i){
+                channel_names.push(data.channels[i].name);
+                channel_ids.push(data.channels[i].id);
+            }
+            return data;
+        })
+        .then((result)=>{
+           ++message_recieved;
+           console.log("User Channel list: " + channel_names)
+           for(i=0; i< channel_length; ++i){
+            if(channel_ids[i] == status.channel)
+                handleMessage(status.text, channel_names[i]);
+        }
+        })
+    }
+    console.log(status);
+
+    //If it's not the first user input, goes through simple loop to shorten response time
+    if(message_recieved > 0){
+        for(i=0; i< channel_length; ++i){
+            if(channel_ids[i] == status.channel)
+                handleMessage(status.text, channel_names[i]);
+        }
+    }
+    //handleMessage(data.text);
 });
 
 
 // Responding to Data
-function handleMessage(message, channel, user){
+function handleMessage(message, current_channel){
     console.log(message);
 
+//Handles message response depending on the user message
     if(message.includes(' tell me')){
         if(message.includes(' knock')){
-            knockknockJoke();
+            knockknockJoke(current_channel);
         }
         else if(message.includes(' general')){
-            generalJoke();
+            generalJoke(current_channel);
         }
 
         else if(message.includes(' random')){
-            randomJoke();
+            randomJoke(current_channel);
         }
         else if(message.includes(' a joke')){
-            randomJoke();
+            randomJoke(current_channel);
         }
     
         else if(message.includes(' programming')){
-            programmingJoke();
+            programmingJoke(current_channel);
         }
-        else if(message.includes(' me ')){
-            bot.postMessageToChannel('everyone', "Tell you what??? :nomouth:", embarrased);
+        else if(message.includes(' me   ')){
+            const quiet = {
+                icon_emoji: ':no_mouth:'
+            }
+            bot.postMessageToChannel(current_channel, "Tell you what??? :no_mouth:", quiet);
         }
         else{
             const embarrased = {
                 icon_emoji: ':flushed:'
             };
             comment = "Sorry I dont' have that kind of joke.....:droplet::droplet::droplet:\nPlease use @joker --help to know what I can do!";
-            bot.postMessageToChannel('everyone', comment, embarrased);
+            bot.postMessageToChannel(current_channel, comment, embarrased);
 
         }
         
@@ -76,7 +124,7 @@ function handleMessage(message, channel, user){
         const face = {
             icon_emoji: ':thumbsup:'
         };
-        bot.postMessageToChannel("everyone", `I have ${jokeTypes[0]}, ${jokeTypes[1]}, ${jokeTypes[2]} jokes!! :thumbsup: :thumbsup:`, face);
+        bot.postMessageToChannel(current_channel, `I have ${jokeTypes[0]}, ${jokeTypes[1]}, ${jokeTypes[2]} jokes!! :thumbsup: :thumbsup:`, face);
         return;
     }
     // else{
@@ -91,18 +139,22 @@ function handleMessage(message, channel, user){
         
     // }
 }
-randomJoke= ()=>{
+
+//Gets a random integer
+function getRandomInt(max_num) {
+    min = Math.ceil(1);
+    max = Math.floor(max_num);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+//Function for giving out random joke
+randomJoke= (user_channel)=>{
     MongoClient.connect('mongodb://localhost:27017', function (err, client){
     if (err) throw err; 
     var db = client.db('jokeapi');
 
     json_max = 376;
-    function getRandomInt() {
-        min = Math.ceil(1);
-        max = Math.floor(376);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    random = getRandomInt();
+    random = getRandomInt(json_max);
     result = db.collection('jokes').findOne({id: random});   
     
     user = result;
@@ -112,20 +164,14 @@ randomJoke= ()=>{
             icon_emoji: ':laughing:'
         };
         
-        function firstFunction(channel){
-            bot.postMessageToChannel(channel, question, face);
+        function firstFunction(){
+            bot.postMessageToChannel(user_channel, question, face);
         }
         firstFunction('everyone');
         console.log('질문 불려짐');
         return total;
 
 
-        // bot.postMessageToChannel('everyone', question, face);
-        // bot.postMessageToChannel('full-stack-web', question, joke, face);
-        // bot.postMessageToChannel('bot_test', question, face);
-        // bot.postMessageToChannel('everyone', joke, face);
-        // bot.postMessageToChannel('full-stack-web', joke, face);
-        // bot.postMessageToChannel('bot_test', joke, face);
     })
     .then((all)=>{
         joke = all.punchline;
@@ -133,7 +179,7 @@ randomJoke= ()=>{
             icon_emoji: ':laughing:'
         };
         setTimeout(function secondFunction(){
-           bot.postMessageToChannel('everyone', `${joke}:stuck_out_tongue_winking_eye::laughing:`, face, '/play secret')
+           bot.postMessageToChannel(user_channel, `${joke}:stuck_out_tongue_winking_eye::laughing:`, face, '/play secret')
             console.log( "허무개그 전송~~~~!")
         }, 3000);
         
@@ -141,18 +187,15 @@ randomJoke= ()=>{
     client.close();
     })
 }
-generalJoke= ()=>{
+
+//Function for giving out random joke after filtering only general type jokes
+generalJoke= (user_channel)=>{
     MongoClient.connect(url, function (err, client){
         if (err) throw err; 
         var db = client.db('jokeapi');
     
         json_max = 376;
-        function getRandomInt() {
-            min = Math.ceil(1);
-            max = Math.floor(json_max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-        random = getRandomInt();
+        random = getRandomInt(json_max);
         result = db.collection('jokes').findOne({id: random});   
         user = result;
         user.then(function(total){
@@ -168,13 +211,13 @@ generalJoke= ()=>{
                 }
                 else if(total.type != "general"){
                     client.close();
-                    generalJoke();
+                    generalJoke(user_channel);
                 }
             
         })
         .then((joke_info)=>{
             function askQuestion(){
-                bot.postMessageToChannel(joke_info[3], joke_info[0], joke_info[2]);
+                bot.postMessageToChannel(user_channel, joke_info[0], joke_info[2]);
                 console.log("일반 질문 불려짐");
             }
             askQuestion();
@@ -182,25 +225,22 @@ generalJoke= ()=>{
         })
         .then((info)=>{
             setTimeout(function secondFunction(){
-                bot.postMessageToChannel(info[3], `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, info[2])
+                bot.postMessageToChannel(user_channel, `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, info[2])
                  console.log( "허무개그 전송~~~~!")
              }, 3000);
         })
         client.close();
         })
     };
-programmingJoke= ()=>{
+
+//Function for giving out random joke after filtering only programming type jokes
+programmingJoke= (user_channel)=>{
         MongoClient.connect(url, function (err, client){
         if (err) throw err; 
         var db = client.db('jokeapi');
     
         json_max = 376;
-        function getRandomInt() {
-            min = Math.ceil(1);
-            max = Math.floor(376);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-        random = getRandomInt();
+        random = getRandomInt(json_max);
         result = db.collection('jokes').findOne({id: random});   
         user = result;
         user.then(function(total){
@@ -216,19 +256,13 @@ programmingJoke= ()=>{
                 }
                 else if(total.type != "programming"){
                     client.close();
-                    programmingJoke();
+                    programmingJoke(user_channel);
                 }
             
-            // bot.postMessageToChannel('everyone', question, face);
-            // bot.postMessageToChannel('full-stack-web', question, joke, face);
-            // bot.postMessageToChannel('bot_test', question, face);
-            // bot.postMessageToChannel('everyone', joke, face);
-            // bot.postMessageToChannel('full-stack-web', joke, face);
-            // bot.postMessageToChannel('bot_test', joke, face);
         })
         .then((joke_info)=>{
             function askQuestion(){
-                bot.postMessageToChannel(joke_info[3], joke_info[0], joke_info[2]);
+                bot.postMessageToChannel(user_channel, joke_info[0], joke_info[2]);
                 console.log("프로그래밍 질문 불려짐");
             }
             askQuestion();
@@ -236,7 +270,7 @@ programmingJoke= ()=>{
         })
         .then((info)=>{
             setTimeout(function secondFunction(){
-                bot.postMessageToChannel(info[3], `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, info[2])
+                bot.postMessageToChannel(user_channel, `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, info[2])
                  console.log( "허무개그 전송~~~~!")
              }, 3000);
         })
@@ -244,18 +278,15 @@ programmingJoke= ()=>{
         })
     };
 
-knockknockJoke= ()=>{
+//Function for giving out random joke after filtering only knock-knock type jokes
+knockknockJoke= (user_channel)=>{
     MongoClient.connect(url, function (err, client){
         if (err) throw err; 
         var db = client.db('jokeapi');
     
         json_max = 61;
-        function getRandomInt() {
-            min = Math.ceil(1);
-            max = Math.floor(json_max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-        random = getRandomInt();
+        
+        random = getRandomInt(json_max);
         result = db.collection('jokes').findOne({id: random});   
         user = result;
         user.then(function(total){
@@ -271,13 +302,13 @@ knockknockJoke= ()=>{
                 }
                 else if(total.type != "knock-knock"){
                     client.close();
-                    knockknockJoke();
+                    knockknockJoke(user_channel);
                 }
             
         })
         .then((joke_info)=>{
             function askQuestion(){
-                bot.postMessageToChannel(joke_info[3], joke_info[0], joke_info[2]);
+                bot.postMessageToChannel(user_channel, joke_info[0], joke_info[2]);
                 console.log("똑똑 질문 불려짐");
             }
             askQuestion();
@@ -285,13 +316,15 @@ knockknockJoke= ()=>{
         })
         .then((info)=>{
             setTimeout(function secondFunction(){
-                bot.postMessageToChannel(info[3], `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, info[2])
+                bot.postMessageToChannel(user_channel, `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, info[2])
                  console.log( "허무개그 전송~~~~!")
              }, 3000);
         })
         client.close();
         })
     }
+
+//Function for giving out information to user to control the bot
 runHelp = () =>{
     
     const face = {
