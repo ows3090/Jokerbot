@@ -7,7 +7,7 @@ const url = 'mongodb://localhost:27017/';
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "xoxb-582582124755-587875604934-oewQRL6lzHXLkybUrg4CWJVJ",
+        token : "xoxb-582582124755-587875604934-YBMZlb18wIdKQIEpyIV2dORa",
         name : "Joker"
     });
     
@@ -16,8 +16,8 @@ exports.startbot = ()=>{
         const face = {
             icon_emoji: ':bowtie:'
         };
-        bot.postMessageToChannel('everyone', 'Have some fun with @Joker!\nFor commands write @joker help'
-        , face);
+        bot.postMessageToChannel('everyone', 'Have some fun with @Joker!\nFor commands write @joker --help'
+        , face, '/play secret');
     });
     // Error Handler
     bot.on('error', (err) => console.log(err));
@@ -55,7 +55,7 @@ function handleMessage(message, channel, user){
         else if(message.includes(' programming')){
             programmingJoke();
         }
-        else if(message.includes(' me  ')){
+        else if(message.includes(' me ')){
             bot.postMessageToChannel('everyone', "Tell you what??? :nomouth:", embarrased);
         }
         else{
@@ -133,7 +133,7 @@ randomJoke= ()=>{
             icon_emoji: ':laughing:'
         };
         setTimeout(function secondFunction(){
-           bot.postMessageToChannel('everyone', `${joke}:stuck_out_tongue_winking_eye::laughing:`, face)
+           bot.postMessageToChannel('everyone', `${joke}:stuck_out_tongue_winking_eye::laughing:`, face, '/play secret')
             console.log( "허무개그 전송~~~~!")
         }, 3000);
         
