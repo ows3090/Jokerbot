@@ -1,4 +1,4 @@
-<h1>Building a Slackbot</h1><br>
+<h1>Joker</h1><br>
 <h2>A slackbot that reacts to user's chat and sends jokes </h2><br>
 
 <h3>Currently operating on aws EC2 / managing it to run on docker container combining mongodb and the code to interact on 'aws docker version' branch</h3><br><br>
