@@ -7,8 +7,8 @@ const url = 'mongodb://localhost:27017/';
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "xoxb-651692943605-645515979745-sfNJBLVbIIb86Bz1gfFc7oT2",
-        name : "joker"
+        token : "xoxb-635297512738-635283536771-A03RoBh4Dv8qG1EiLudMpk1f",
+        name : "jokebot"
     });
     
     // Start the slackbot
@@ -135,10 +135,8 @@ function MakeJoke(message){
     })
 }
 //Gets a random integer
-function getRandomInt(max_num) {
-    min = Math.ceil(1);
-    max = Math.floor(max_num);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+function getRandomInt(start,end) {
+    return Math.floor((Math.random() * 100)%(end-start))+start;
 }
 
 //Function for giving out random joke
@@ -184,23 +182,15 @@ generalJoke= (user_channel)=>{
         if (err) throw err; 
         var db = client.db('jokeapi');
     
-        json_max = 376;
-        random = getRandomInt(json_max);
+        random = getRandomInt(24,377);
         result = db.collection('jokes').findOne({id: random});   
         user = result;
         //if the random picked api type is not general execute the function from the start to get another format for general type
         user.then(function(total){
-                if(total.type === "general"){
-                    question = total.setup;
-                    joke = total.punchline;
-                    ques_and_joke = [question, joke];
-                    return ques_and_joke;
-                }
-                else if(total.type != "general"){
-                    client.close();
-                    generalJoke(user_channel);
-                }
-            
+            question = total.setup;
+            joke = total.punchline;
+            ques_and_joke = [question, joke];
+            return ques_and_joke;
         })
         .then((joke_info)=>{
             bot.postMessageToChannel(user_channel, joke_info[0], emoji.emojis('laughing'));
@@ -223,22 +213,14 @@ programmingJoke= (user_channel)=>{
         if (err) throw err; 
         var db = client.db('jokeapi');
     
-        json_max = 376;
-        random = getRandomInt(json_max);
+        random = getRandomInt(0,19);
         result = db.collection('jokes').findOne({id: random});   
         user = result;
         user.then(function(total){
-                if(total.type === "programming"){
-                    question = total.setup;
-                    joke = total.punchline;
-                    ques_and_joke = [question, joke];
-                    return ques_and_joke;
-                }
-                else if(total.type != "programming"){
-                    client.close();
-                    programmingJoke(user_channel);
-                }
-            
+            question = total.setup;
+            joke = total.punchline;
+            ques_and_joke = [question, joke];
+            return ques_and_joke;
         })
         .then((joke_info)=>{
             bot.postMessageToChannel(user_channel, joke_info[0], emoji.emojis('laughing'));
@@ -316,23 +298,15 @@ knockknockJoke= (user_channel)=>{
     MongoClient.connect(url, function (err, client){
         if (err) throw err; 
         var db = client.db('jokeapi');
-        json_max = 61;
         
-        random = getRandomInt(json_max);
+        random = getRandomInt(19,24);
         result = db.collection('jokes').findOne({id: random});   
         user = result;
         user.then(function(total){
-                if(total.type === "knock-knock"){
-                    question = total.setup;
-                    joke = total.punchline;
-                    ques_and_joke = [question, joke];
-                    return ques_and_joke;
-                }
-                else if(total.type != "knock-knock"){
-                    client.close();
-                    knockknockJoke(user_channel);
-                }
-            
+            question = total.setup;
+            joke = total.punchline;
+            ques_and_joke = [question, joke];
+            return ques_and_joke;
         })
         .then((joke_info)=>{
             bot.postMessageToChannel(user_channel, joke_info[0], emoji.emojis('laughing'));
