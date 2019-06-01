@@ -113,8 +113,8 @@ function handleMessage(message, current_channel){
        bot.postMessageToChannel(current_channel, comment, emoji.emojis('smiliey'));
     }
     else if(message.includes(' what jokes')){
-        jokeTypes = ["general", 'programming', 'knock-knock'];
-        bot.postMessageToChannel(current_channel, `I have ${jokeTypes[0]}, ${jokeTypes[1]}, ${jokeTypes[2]} jokes!! :thumbsup: :thumbsup:`, emoji.emojis('thumbsup'));
+        jokeTypes = ["general", 'programming', 'knock-knock','reddit','funny story'];
+        bot.postMessageToChannel(current_channel, `I have ${jokeTypes[0]}, ${jokeTypes[1]}, ${jokeTypes[2]},${jokeTypes[3]},${jokeTypes[4]} jokes!! :thumbsup: :thumbsup:`, emoji.emojis('thumbsup'));
         return;
     }
     //else if(message.inculdes(' write'))
@@ -257,7 +257,7 @@ programmingJoke= (user_channel)=>{
 
 
 
-//Function for giving out random joke after filtering only reddit jokes
+//Function for giving out funny story 
 Funnystory= (user_channel)=>{
     MongoClient.connect(url, function (err, client){
         if (err) throw err; 
