@@ -1,9 +1,9 @@
 const MongoClient = require('mongodb').MongoClient;
-const jokedoc = require('./joke_data/jokes.json');
-const dbname =  'jokeapi';
-const collec = 'jokes';
+const jokedoc = require('./joke_data/reddit_joke.json');
+const dbname =  'redditjoke';
+const collec = 'reddit';
 const dboperation = require('./operations.js');
-var url = "mongodb://localhost:27017/jokeapi";
+var url = "mongodb://localhost:27017/redditjoke";
 
 //Create database
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -15,8 +15,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 //Create collection
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err;
-    var dbo = db.db("jokeapi");
-    dbo.createCollection("joke", function(err, res) {
+    var dbo = db.db("redditjoke");
+    dbo.createCollection("redditjokes", function(err, res) {
       if (err) throw err;
       console.log("Collection created!");
       db.close();
