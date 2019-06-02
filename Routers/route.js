@@ -103,7 +103,7 @@ function handleMessage(message, current_channel){
             Funnystory(current_channel);
         }
         else if(message.includes(' me')){
-            comment = "Please use @joker --help to know what I can do!:smiliey::smiliey::smiliey:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
+            comment = "Please use @joker --help to know what I can do!:smile::smile::smile:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
             bot.postMessageToChannel(current_channel, "Tell you what??? :no_mouth:", emoji.emojis('no_mouth'));
             bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));
         }  
