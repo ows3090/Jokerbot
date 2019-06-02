@@ -126,14 +126,7 @@ function handleMessage(message, current_channel){
          bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));    
     }*/
 }
-function MakeJoke(message){
-    fs.writeFile('../joke_data//jokes.json',message,function(err){
-        if(err) {
-            console.log('Error' + err);
-        }
-        console.log('완료');
-    })
-}
+
 //Gets a random integer
 function getRandomInt(max_num) {
     min = Math.ceil(1);
