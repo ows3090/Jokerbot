@@ -109,8 +109,7 @@ function handleMessage(message, current_channel){
         }  
     }
     else if(message.includes(' --help')){
-       comment = "If you want to start @joker then write [tell me] and write type of joke [knock-knock, general, programming, funny story, reddit]:smiley:!!!";
-       bot.postMessageToChannel(current_channel, comment, emoji.emojis('smiliey'));
+       runHelp(current_channel);
     }
     else if(message.includes(' what jokes')){
         jokeTypes = ["general", 'programming', 'knock-knock','reddit','funny story'];
