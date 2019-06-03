@@ -4,7 +4,6 @@ const dbname =  'jokeapi';
 const emoji = require('../slack_emoji');
 const url = 'mongodb://localhost:27017/';
 const fs=require('fs');
-num=1;
 //const userjoke = require('./joke_data/user.json');
 
 exports.startbot = ()=>{
@@ -107,14 +106,15 @@ function handleMessage(message, current_channel){
         else if(message.includes(' funny story')){
             Funnystory(current_channel);
         }
+        else if(message.includes(' userjoke')){
+            UserMakeJoke(current_channel);
+        }  
         else if(message.includes(' me')){
             comment = "Please use @joker --help to know what I can do!:smile::smile::smile:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
             bot.postMessageToChannel(current_channel, "Tell you what??? :no_mouth:", emoji.emojis('no_mouth'));
             bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));
         }
-        else if(message.includes(' userjoke')){
-            UserMakeJoke(current_channel);
-        }  
+        
     }
     else if(message.includes(' help')){
        comment = "If you want to start @joker then write [tell me] and write type of joke [knock-knock, general, programming, funny story, reddit]:smiley:!!!";
@@ -148,8 +148,7 @@ function MakeJoke(message){
     }
     var input=message.split(':');
     var msg=input[1].split(',');
-    // obj.table.push({id : msg[1], type : msg[2], setup : msg[3], punchling : msg[4]});
-    // var json=JSON.stringify(obj);
+
     fs.exists('./joke_data/user.json',function(exists){
         if(exists){
             console.log("yes file exists");
@@ -159,9 +158,9 @@ function MakeJoke(message){
                 }
                 else{
                     obj=JSON.parse(data);
-                    obj.table.push({id : num, type : 'userjoke', setup : msg[0], punchling : msg[1]});
+                    var length=obj.table.length;
+                    obj.table.push({id : length+1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
                     var json=JSON.stringify(obj);
-                    num++;
                     fs.writeFile('./joke_data/user.json',json,'utf8',function(err){
                         if(err){
                             console.log(err);
@@ -173,9 +172,8 @@ function MakeJoke(message){
         }
         else{
             console.log("file not exists");
-            obj.table.push({id : num, type : 'userjoke', setup : msg[0], punchling : msg[1]});
+            obj.table.push({id : 1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
             var json=JSON.stringify(obj);
-            num++;
             fs.writeFile('./joke_data/user.json',json,'utf8',function(err){
                 if(err){
                     console.log(err);
@@ -233,8 +231,23 @@ randomJoke= (user_channel)=>{
 }
 
 // Function for giving out users making joke
-UserMakeJoke= (users_channel)=>{
-    
+UserMakeJoke= (user_channel)=>{
+    var data=fs.readFileSync('./joke_data/user.json');
+    var jsondata=JSON.parse(data);
+    random=getRandomInt(1,jsondata.table.length+1);
+
+    console.log(random);
+    for(var i=0;i<jsondata.table.length;i++){
+        if(jsondata.table[i].id==random){
+            user=jsondata.table[i];
+            console.log(user);
+            question=user.setup;
+            joke=user.punchline;
+            result=question+'\n'+joke;
+            bot.postMessageToChannel(user_channel,result, emoji.emojis('laughing'));
+            break;
+        }
+    }
 }
 
 //Function for giving out random joke after filtering only general type jokes
@@ -274,7 +287,7 @@ programmingJoke= (user_channel)=>{
         if (err) throw err; 
         var db = client.db('jokeapi');
     
-        random = getRandomInt(0,19);
+        random = getRandomInt(1,19);
         result = db.collection('jokes').findOne({id: random});   
         user = result;
         user.then(function(total){
