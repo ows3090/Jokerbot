@@ -3,6 +3,7 @@ const SlackBot = require('slackbots'); //link : https://github.com/mishk0/slack-
 const dbname =  'jokeapi';
 const emoji = require('../slack_emoji');
 const url = 'mongodb://localhost:27017/';
+var url2 = 'mongodb://localhost:27017/userjoke'
 const fs = require('fs');
 //const userjoke = require('./joke_data/user.json');
 
@@ -21,7 +22,7 @@ exports.startbot = ()=>{
         channel_length = data.channels.length; 
         for(i=0; i< channel_length; ++i){
             //postMessageToChannel(name, message [, params, callback]) (return: promise) - posts a message to channel by name.
-            bot.postMessageToChannel(data.channels[i].name, 'Have some fun with @Joker!\nFor commands write @joker -help'
+            bot.postMessageToChannel(data.channels[i].name, 'Have some fun with @Joker!\nFor commands write @joker [-help]'
 
         , emoji.emojis('bowtie'));
         }
@@ -110,7 +111,7 @@ function handleMessage(message, current_channel){
             UserMakeJoke(current_channel);
         }  
         else if(message.includes(' me')){
-            comment = "Please use @joker --help to know what I can do!:smile::smile::smile:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
+            comment = "Please use @joker [-help] to know what I can do!:smile::smile::smile:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
             bot.postMessageToChannel(current_channel, "Tell you what??? :no_mouth:", emoji.emojis('no_mouth'));
             bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));
         }
@@ -159,6 +160,18 @@ function MakeJoke(message){
                     obj=JSON.parse(data);
                     var length=obj.table.length;
                     obj.table.push({id : length+1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
+                    var myobj = {id : length+1, type : 'userjoke', setup : msg[0], punchline : msg[1]};
+                    MongoClient.connect(url2,function(err,db){
+                        if(err) throw err;
+                        var dbo = db.db("userdb");
+                        dbo.collection("user").insertOne(myobj, function(err,res){
+                            if(err) throw err;
+                            console.log("1 insert!!");
+                            db.close;
+                        }) 
+
+                    })
+                    
                     var json=JSON.stringify(obj);
                     fs.writeFile('./joke_data/user.json',json,'utf8',function(err){
                         if(err){
@@ -172,6 +185,34 @@ function MakeJoke(message){
         else{
             console.log("file not exists");
             obj.table.push({id : 1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
+            var myobj = {id : 1, type : 'userjoke', setup : msg[0], punchline : msg[1]};
+                    //Create database
+            MongoClient.connect(url2, { useNewUrlParser: true }, function(err, db) {
+                    if (err) throw err;
+                    console.log("Database created!");
+                    db.close();
+            });
+  
+            //Create collection
+            MongoClient.connect(url2, { useNewUrlParser: true }, function(err, db) {
+                    if (err) throw err;
+                    var dbo = db.db("userdb");
+                    dbo.createCollection("user", function(err, res) {
+                    if (err) throw err;
+                    console.log("Collection created!");
+                     db.close();
+                    });
+                }); 
+            MongoClient.connect(url2,{ useNewUrlParser: true },function(err,db){
+                    if(err) throw err;
+                    var dbo = db.db("userdb");
+                    dbo.collection("user").insertOne(myobj, function(err,res){
+                        if(err) throw err;
+                        console.log("1 insert!!");
+                        db.close;
+                    }) 
+
+            });
             var json=JSON.stringify(obj);
             fs.writeFile('./joke_data/user.json',json,'utf8',function(err){
                 if(err){
@@ -400,7 +441,7 @@ knockknockJoke= (user_channel)=>{
 //Function for giving out information to user to control the bot
 runHelp = (user_channel) =>{
     
-    comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker -help' for infos\nBot functions: '@joker tell me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
+    comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker [-help]' for infos\nBot functions: '@joker tell me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
     current_jokes = "Joke types I have: general , knock-knock , programming , reddit, funny story"
     bot.postMessageToChannel(user_channel, comment + current_jokes ,emoji.emojis('question'));
     }
