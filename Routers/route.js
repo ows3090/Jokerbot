@@ -4,7 +4,7 @@ const dbname =  'jokeapi';
 const emoji = require('../slack_emoji');
 const url = 'mongodb://localhost:27017/';
 const fs=require('fs');
-//const userjoke = require('./joke_data/user.json');
+message_recieved = 0;
 
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
@@ -21,9 +21,8 @@ exports.startbot = ()=>{
         channel_length = data.channels.length; 
         for(i=0; i< channel_length; ++i){
             //postMessageToChannel(name, message [, params, callback]) (return: promise) - posts a message to channel by name.
-            bot.postMessageToChannel(data.channels[i].name, 'Have some fun with @Joker!\nFor commands write @joker --help'
-
-        , emoji.emojis('bowtie'));
+            bot.postMessageToChannel(data.channels[i].name, 'Have some fun with @Joker!\nFor commands write @joker --help', 
+            emoji.emojis('bowtie'));
         }
         return data;
     })
@@ -41,7 +40,7 @@ exports.startbot = ()=>{
     }
 
     status = data;
-    message_recieved = 0;
+  
 
     //Figure out which channel the user is sending message
     //If it's first input from the user, go through this loop to store the data of channel names and ids
@@ -63,8 +62,9 @@ exports.startbot = ()=>{
            ++message_recieved;
            console.log("User Channel list: " + channel_names)
            for(i=0; i< channel_length; ++i){
-            if(channel_ids[i] == status.channel)
+            if(channel_ids[i] == status.channel){
                 handleMessage(status.text, channel_names[i]);
+            }
         }
         })
     }
@@ -116,7 +116,7 @@ function handleMessage(message, current_channel){
         }
         
     }
-    else if(message.includes(' --help')){
+    else if(message.includes(' -help')){
        runHelp(current_channel);
     }
     else if(message.includes(' what jokes')){
@@ -126,18 +126,8 @@ function handleMessage(message, current_channel){
     }
     else if(message.includes(' make joke : '))
     {
-        console.log('123');
         MakeJoke(message);
     }
-    // else{
-    //     console.log('456');
-    //     UserMakeJoke(current_channel);
-        
-    // }
-    /*else{
-         comment = "Sorry I'm not smart enough to understand this.....\nPlease use @joker help to know what I can do!";
-         bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));    
-    }*/
 }
 
 
@@ -201,8 +191,7 @@ randomJoke= (user_channel)=>{
     var db = client.db('jokeapi');
 
     //set the maximum number of api formats and get a random integer
-    json_max = 376;
-    random = getRandomInt(json_max);
+    random = getRandomInt(1,377);
     //Go to jokes collection inside jokeapi database and find one joke randomly by putting a random number
     result = db.collection('jokes').findOne({id: random});   
     
@@ -319,7 +308,7 @@ Funnystory= (user_channel)=>{
         var db = client.db('FunnyStoryapi');
     
         
-        random = getRandomInt(200);
+        random = getRandomInt(1,201);
         result = db.collection('FunnyStory').findOne({id: random});   
         user = result;
         //if the random picked api type is not general execute the function from the start to get another format for general type
@@ -346,8 +335,7 @@ redditJoke= (user_channel)=>{
         if (err) throw err; 
         var db = client.db('redditjoke');
     
-        json_max = 70;
-        random = getRandomInt(json_max);
+        random = getRandomInt(1,71);
         result = db.collection('reddit').findOne({id: random});   
         user = result;
         //if the random picked api type is not general execute the function from the start to get another format for general type
@@ -400,8 +388,8 @@ knockknockJoke= (user_channel)=>{
 //Function for giving out information to user to control the bot
 runHelp = (user_channel) =>{
     
-    comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker --help' for infos\nBot functions: '@joker tell me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
-    current_jokes = "Joke types I have: general , knock-knock , programming , reddit, funny story"
+    comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker help' for infos\nBot functions: '@joker tell-me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
+    current_jokes = "Joke types I have: 1)general , 2)knock-knock , 3)programming , 4)reddit, 5)funny story, 6)make joke 7)userjoke"
     bot.postMessageToChannel(user_channel, comment + current_jokes ,emoji.emojis('question'));
     }
 }
