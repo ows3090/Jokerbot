@@ -1,5 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
-const jokedoc = require('./joke_data/reddit_joke.json');
+const jokedoc = require('../joke_data/reddit_joke.json');
 const dbname =  'redditjoke';
 const collec = 'reddit';
 const dboperation = require('./operations.js');
