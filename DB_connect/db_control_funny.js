@@ -16,7 +16,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err;
     var dbo = db.db("FunnyStoryapi");
-    dbo.createCollection("FunnyStories", function(err, res) {
+    dbo.createCollection("FunnyStory", function(err, res) {
       if (err) throw err;
       console.log("Collection created!");
       db.close();
