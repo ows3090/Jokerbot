@@ -3,8 +3,8 @@ const SlackBot = require('slackbots'); //link : https://github.com/mishk0/slack-
 const dbname =  'jokeapi';
 const emoji = require('../slack_emoji');
 const url = 'mongodb://localhost:27017/';
-const fs = require('fs');
-//const userjoke = require('./joke_data/user.json');
+const fs=require('fs');
+message_recieved = 0;
 
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
@@ -21,9 +21,8 @@ exports.startbot = ()=>{
         channel_length = data.channels.length; 
         for(i=0; i< channel_length; ++i){
             //postMessageToChannel(name, message [, params, callback]) (return: promise) - posts a message to channel by name.
-            bot.postMessageToChannel(data.channels[i].name, 'Have some fun with @Joker!\nFor commands write @joker -help'
-
-        , emoji.emojis('bowtie'));
+            bot.postMessageToChannel(data.channels[i].name, 'Have some fun with @Joker!\nFor commands write @joker --help', 
+            emoji.emojis('bowtie'));
         }
         return data;
     })
@@ -41,7 +40,7 @@ exports.startbot = ()=>{
     }
 
     status = data;
-    message_recieved = 0;
+  
 
     //Figure out which channel the user is sending message
     //If it's first input from the user, go through this loop to store the data of channel names and ids
@@ -63,8 +62,9 @@ exports.startbot = ()=>{
            ++message_recieved;
            console.log("User Channel list: " + channel_names)
            for(i=0; i< channel_length; ++i){
-            if(channel_ids[i] == status.channel)
+            if(channel_ids[i] == status.channel){
                 handleMessage(status.text, channel_names[i]);
+            }
         }
         })
     }
@@ -126,18 +126,8 @@ function handleMessage(message, current_channel){
     }
     else if(message.includes(' make joke : '))
     {
-        console.log('123');
         MakeJoke(message);
     }
-    // else{
-    //     console.log('456');
-    //     UserMakeJoke(current_channel);
-        
-    // }
-    /*else{
-         comment = "Sorry I'm not smart enough to understand this.....\nPlease use @joker help to know what I can do!";
-         bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));    
-    }*/
 }
 
 
@@ -201,8 +191,7 @@ randomJoke= (user_channel)=>{
     var db = client.db('jokeapi');
 
     //set the maximum number of api formats and get a random integer
-    json_max = 376;
-    random = getRandomInt(1,json_max);
+    random = getRandomInt(1,377);
     //Go to jokes collection inside jokeapi database and find one joke randomly by putting a random number
     result = db.collection('jokes').findOne({id: random});   
     
@@ -210,19 +199,11 @@ randomJoke= (user_channel)=>{
     //After finding one joke, use promise to run codes synchronously
     user.then(function(total){
         question = total.setup;
+        joke=total.punchline;
+        ques_and_joke=question+'\n'+joke+':stuck_out_tongue_winking_eye::laughing:';
         //Ask the question first by extracting 'setup' section from api format
-        bot.postMessageToChannel(user_channel, question, emoji.emojis('laughing'));
-        console.log('질문 불려짐');
-        return total;
-    })
-    .then((all)=>{
-        joke = all.punchline;
-        //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
-        setTimeout(function secondFunction(){
-           bot.postMessageToChannel(user_channel, `${joke}:stuck_out_tongue_winking_eye::laughing:`, emoji.emojis('laughing'))
-            console.log( "허무개그 전송~~~~!")
-        }, 3000);
-        
+        bot.postMessageToChannel(user_channel, ques_and_joke, emoji.emojis('laughing'));
+        console.log('Random joke~~~');
     })
     //close mongodb
     client.close();
@@ -239,11 +220,11 @@ UserMakeJoke= (user_channel)=>{
     for(var i=0;i<jsondata.table.length;i++){
         if(jsondata.table[i].id==random){
             user=jsondata.table[i];
-            console.log(user);
             question=user.setup;
             joke=user.punchline;
             result=question+'\n'+joke;
             bot.postMessageToChannel(user_channel,result, emoji.emojis('laughing'));
+            console.log("User joke~~~");
             break;
         }
     }
@@ -262,19 +243,9 @@ generalJoke= (user_channel)=>{
         user.then(function(total){
             question = total.setup;
             joke = total.punchline;
-            ques_and_joke = [question, joke];
-            return ques_and_joke;
-        })
-        .then((joke_info)=>{
-            bot.postMessageToChannel(user_channel, joke_info[0], emoji.emojis('laughing'));
-            console.log("일반 질문 불려짐");
-            return joke_info;
-        })
-        .then((info)=>{
-            setTimeout(function secondFunction(){
-                bot.postMessageToChannel(user_channel, `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, emoji.emojis('laughing'))
-                 console.log( "허무개그 전송~~~~!")
-             }, 3000);
+            ques_and_joke=question+'\n'+joke+':stuck_out_tongue_winking_eye::laughing:';
+            bot.postMessageToChannel(user_channel,ques_and_joke,emoji.emojis('laughing'));
+            console.log("General Joke~~~~");
         })
         client.close();
         })
@@ -292,19 +263,9 @@ programmingJoke= (user_channel)=>{
         user.then(function(total){
             question = total.setup;
             joke = total.punchline;
-            ques_and_joke = [question, joke];
-            return ques_and_joke;
-        })
-        .then((joke_info)=>{
-            bot.postMessageToChannel(user_channel, joke_info[0], emoji.emojis('laughing'));
-            console.log("프로그래밍 질문 불려짐");
-            return joke_info;
-        })
-        .then((info)=>{
-            setTimeout(function secondFunction(){
-                bot.postMessageToChannel(user_channel, `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, emoji.emojis('laughing'))
-                 console.log( "허무개그 전송~~~~!")
-             }, 3000);
+            ques_and_joke = question+'\n'+joke+':stuck_out_tongue_winking_eye::laughing:';
+            bot.postMessageToChannel(user_channel,ques_and_joke,emoji.emojis('laughing'));
+            console.log("Programming Joke~~~");
         })
         client.close();
         })
@@ -319,21 +280,16 @@ Funnystory= (user_channel)=>{
         var db = client.db('FunnyStoryapi');
     
         
-        random = getRandomInt(1,200);
+        random = getRandomInt(1,201);
         result = db.collection('FunnyStory').findOne({id: random});   
         user = result;
         //if the random picked api type is not general execute the function from the start to get another format for general type
         user.then(function(total){
             category = total.category
+            story=total.body;
+            category_story=category+'\n'+story+':stuck_out_tongue_winking_eye::laughing:';
              bot.postMessageToChannel(user_channel, category, emoji.emojis('smiliey'));
-             console.log("이야기 카테고리")
-        return total;
-        })
-        .then((all)=>{
-            story = all.body;
-             bot.postMessageToChannel(user_channel, `${story}:stuck_out_tongue_winking_eye::laughing:`, emoji.emojis('laughing'))
-            console.log("이야기 시작!");
-            
+             console.log("Funny story~~~");
         })
         client.close();
         })
@@ -346,22 +302,16 @@ redditJoke= (user_channel)=>{
         if (err) throw err; 
         var db = client.db('redditjoke');
     
-        json_max = 70;
-        random = getRandomInt(1,json_max);
+        random = getRandomInt(1,71);
         result = db.collection('reddit').findOne({id: random});   
         user = result;
         //if the random picked api type is not general execute the function from the start to get another format for general type
         user.then(function(total){
              title = total.title;
-             bot.postMessageToChannel(user_channel, title, emoji.emojis('smiliey'));
-             console.log("문답형 JOKE")
-    return total;
-        })
-        .then((all)=>{
-            joke = all.body;
-     bot.postMessageToChannel(user_channel, `${joke}:stuck_out_tongue_winking_eye::laughing:`, emoji.emojis('laughing'))
-            console.log("정답은~~");
-            
+             joke=total.body;
+             title_joke=title+'\n'+joke+':stuck_out_tongue_winking_eye::laughing:';
+             bot.postMessageToChannel(user_channel, title_joke, emoji.emojis('smiliey'));
+             console.log("reddit Joke~~~");
         })
         client.close();
         })
@@ -378,20 +328,9 @@ knockknockJoke= (user_channel)=>{
         user.then(function(total){
             question = total.setup;
             joke = total.punchline;
-            ques_and_joke = [question, joke];
-            return ques_and_joke;
-        })
-        .then((joke_info)=>{
-            bot.postMessageToChannel(user_channel, joke_info[0], emoji.emojis('laughing'));
-            console.log("똑똑 질문 불려짐");
-            
-            return joke_info;
-        })
-        .then((info)=>{
-            setTimeout(function secondFunction(){
-                bot.postMessageToChannel(user_channel, `${info[1]}:stuck_out_tongue_winking_eye::laughing:`, emoji.emojis('laughing'))
-                 console.log( "허무개그 전송~~~~!")
-             }, 3000);
+            ques_and_joke = question+'\n'+joke+':stuck_out_tongue_winking_eye::laughing:';
+            bot.postMessageToChannel(user_channel, ques_and_joke, emoji.emojis('laughing'));
+            console.log("Knock-Knock joke~~~");
         })
         client.close();
         })
@@ -400,8 +339,8 @@ knockknockJoke= (user_channel)=>{
 //Function for giving out information to user to control the bot
 runHelp = (user_channel) =>{
     
-    comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker -help' for infos\nBot functions: '@joker tell me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
-    current_jokes = "Joke types I have: general , knock-knock , programming , reddit, funny story"
+    comment = "Thanks for using Joker bot!:ghost::ghost:laugh:\nBot info: type '@joker help' for infos\nBot functions: '@joker tell-me [something] joke' will send related jokes, if I don't have what you mentioned, I will tell you I don't have that joke:smile:\n"
+    current_jokes = "Joke types I have: 1)general , 2)knock-knock , 3)programming , 4)reddit, 5)funny story, 6)make joke 7)userjoke"
     bot.postMessageToChannel(user_channel, comment + current_jokes ,emoji.emojis('question'));
     }
 }
