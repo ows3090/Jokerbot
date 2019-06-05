@@ -107,7 +107,7 @@ function handleMessage(message, current_channel){
             Funnystory(current_channel);
         }
         else if(message.includes(' userjoke')){
-            UserMakeJoke(current_channel);
+            UserMakeJoke(message,current_channel);
         }  
         else if(message.includes(' me')){
             comment = "Please use @joker --help to know what I can do!:smile::smile::smile:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
@@ -137,11 +137,16 @@ function MakeJoke(message,user_channel){
     }
     var input=message.split(':');
     var msg=input[1].split(',');
-
-    fs.exists('./joke_data/user.json',function(exists){
+    var temp=message.split(' ');
+    var user=temp[0].substring(2,temp[0].length-1);
+    console.log('유저 => '+user);
+    
+    var path='./joke_data/'+user+'.json';
+    console.log(path);
+    fs.exists(path,function(exists){
         if(exists){
             console.log("yes file exists");
-            fs.readFile('./joke_data/user.json',function readFileCallback(err,data){
+            fs.readFile(path,function readFileCallback(err,data){
                 if(err){
                     console.log(err);
                 }
@@ -150,7 +155,7 @@ function MakeJoke(message,user_channel){
                     var length=obj.table.length;
                     obj.table.push({id : length+1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
                     var json=JSON.stringify(obj);
-                    fs.writeFile('./joke_data/user.json',json,'utf8',function(err){
+                    fs.writeFile(path,json,'utf8',function(err){
                         if(err){
                             console.log(err);
                         }
@@ -165,7 +170,7 @@ function MakeJoke(message,user_channel){
             console.log("file not exists");
             obj.table.push({id : 1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
             var json=JSON.stringify(obj);
-            fs.writeFile('./joke_data/user.json',json,'utf8',function(err){
+            fs.writeFile(path,json,'utf8',function(err){
                 if(err){
                     console.log(err);
                 }
@@ -221,8 +226,15 @@ randomJoke= (user_channel)=>{
 }
 
 // Function for giving out users making joke
-UserMakeJoke= (user_channel)=>{
-    var data=fs.readFileSync('./joke_data/user.json');
+UserMakeJoke= (message,user_channel)=>{
+
+    var temp=message.split(' ');
+    var user=temp[0].substring(2,temp[0].length-1);
+    console.log('유저 => '+user);
+    
+    var path='./joke_data/'+user+'.json';
+
+    var data=fs.readFileSync(path);
     var jsondata=JSON.parse(data);
     random=getRandomInt(1,jsondata.table.length+1);
 
@@ -233,7 +245,6 @@ UserMakeJoke= (user_channel)=>{
             question=user.setup;
             bot.postMessageToChannel(user_channel,question, emoji.emojis('laughing'));
             joke=user.punchline;
-            // result=question+'\n'+joke;
             setTimeout(function secondfunction(){
                 bot.postMessageToChannel(user_channel,joke, emoji.emojis('laughing'));
             },3000);
