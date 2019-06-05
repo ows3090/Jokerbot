@@ -10,8 +10,8 @@ message_recieved = 0;
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "xoxb-582582124755-587875604934-gdWsVhzGXCze3mECWXpTsAP6",
-        name : "joker"
+        token : "xoxb-635297512738-635283536771-A03RoBh4Dv8qG1EiLudMpk1f",
+        name : "jokebot"
     });
     
     // Start the slackbot
@@ -141,9 +141,8 @@ function MakeJoke(message,user_channel){
     var temp=message.split(' ');
     var user=temp[0].substring(2,temp[0].length-1);
     console.log('유저 => '+user);
-    
+
     var path='./joke_data/user.json';
-    console.log(path);
     fs.exists(path,function(exists){
         if(exists){
             console.log("yes file exists");
@@ -155,24 +154,33 @@ function MakeJoke(message,user_channel){
                     obj=JSON.parse(data);
                     var length=obj.table.length;
                     obj.table.push({id : length+1, type : user, setup : msg[0], punchline : msg[1]});
-                    var myobj = {id : length+1, type : user, setup : msg[0], punchline : msg[1]};
+                    //var myobj = {id : length+1, type : user, setup : msg[0], punchline : msg[1]};
                     MongoClient.connect(url,function(err,db){
                         if(err) throw err;
                         var dbo = db.db("userdb");
-                        dbo.collection("user").insertOne(myobj, function(err,res){
-                            if(err) throw err;
-                            console.log("1 insert!!");
-                            db.close;
-                        }) 
-                    })
+                        var array = dbo.collection('user').find({type : user}).toArray(function(err,docs){
+                            if(err){
+                                callback(err,null);
+                                return ;
+                            }
+                            
+                            console.log(docs.length);
+                            var myobj = {id : docs.length+1, type : user, setup : msg[0], punchline : msg[1]};
+                            dbo.collection("user").insertOne(myobj, function(err,res){
+                                if(err) throw err;
+                                console.log("1 insert!!");
+                                db.close();
+                            }) 
+                        });
                     
-                    var json=JSON.stringify(obj);
-                    fs.writeFile(path,json,'utf8',function(err){
-                        if(err){
-                            console.log(err);
-                        }
-                        console.log('완료');
-                    });
+                    })
+                    // var json=JSON.stringify(obj);
+                    // fs.writeFile(path,json,'utf8',function(err){
+                    //     if(err){
+                    //         console.log(err);
+                    //     }
+                    //     console.log('완료');
+                    // });
                 }
             });
             comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @jokebot tell-me-userjoke";
@@ -189,7 +197,7 @@ function MakeJoke(message,user_channel){
                     dbo.collection("user").insertOne(myobj, function(err,res){
                         if(err) throw err;
                         console.log("1 insert!!");
-                        db.close;
+                        db.close();
                     }) 
             });
             var json=JSON.stringify(obj);
@@ -259,10 +267,19 @@ UserMakeJoke= (message,user_channel)=>{
     if (err) throw err; 
     //go into database name jokeapi
     var db = client.db('userdb');
+    ary_size=0;
+    var array = db.collection('user').find({type: user}).toArray(function(err,docs){
+        if(err){
+            callback(err,null);
+            return ;
+        }
+        ary_size=docs.length;
+        console.log(docs.length);
+    });
 
-    result = db.collection('user').findOne({type: user});
-    console.log(result);
-
+   // var random=getRandomInt(1,ar+1);
+    //console.log(array.);
+    var result=db.collection('user').findOne({type : user ,id : random});
     user = result;
     //After finding one joke, use promise to run codes synchronously
     user.then(function(total){
@@ -282,12 +299,6 @@ UserMakeJoke= (message,user_channel)=>{
     //close mongodb
     client.close();
     })
-
-    
-    var path='./joke_data/'+user+'.json';
-
-    var data=fs.readFileSync(path);
-    var jsondata=JSON.parse(data);
 
     
 }
