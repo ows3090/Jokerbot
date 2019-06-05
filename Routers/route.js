@@ -158,7 +158,7 @@ function MakeJoke(message,user_channel){
                     });
                 }
             });
-            comment="Sucess making joke!!:+1::thumbsup:\nWhen you use your joke, please enter @jokebot tell-me-userjoke";
+            comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @jokebot tell-me-userjoke";
             bot.postMessageToChannel(user_channel,`${comment}:kissing_heart:`,emoji.emojis('nerd_face'));
         }
         else{
@@ -171,7 +171,8 @@ function MakeJoke(message,user_channel){
                 }
                 console.log('완료');
             });
-
+            comment="Sucess making joke!!:+1::thumbsup:\nWhen you want to show your joke, please enter @jokebot tell-me-userjoke";
+            bot.postMessageToChannel(user_channel,`${comment}:kissing_heart:`,emoji.emojis('nerd_face'));
         }
     })
    
