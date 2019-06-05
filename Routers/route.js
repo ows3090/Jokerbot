@@ -227,9 +227,12 @@ UserMakeJoke= (user_channel)=>{
         if(jsondata.table[i].id==random){
             user=jsondata.table[i];
             question=user.setup;
+            bot.postMessageToChannel(user_channel,question, emoji.emojis('laughing'));
             joke=user.punchline;
-            result=question+'\n'+joke;
-            bot.postMessageToChannel(user_channel,result, emoji.emojis('laughing'));
+            // result=question+'\n'+joke;
+            setTimeout(function secondfunction(){
+                bot.postMessageToChannel(user_channel,joke, emoji.emojis('laughing'));
+            },3000);
             console.log("User joke~~~");
             break;
         }
