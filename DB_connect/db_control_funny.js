@@ -3,7 +3,7 @@ const jokedoc = require('../joke_data/Funny_story.json');
 const dbname =  'FunnyStoryapi';
 const collec = 'FunnyStory';
 const dboperation = require('./operations.js');
-var url = "mongodb://localhost:27017/FunnyStoryapi";
+var url = "mongodb://13.124.65.242:27017/FunnyStoryapi";
 
 //Create database
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -16,7 +16,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err;
     var dbo = db.db("FunnyStoryapi");
-    dbo.createCollection("FunnyStory", function(err, res) {
+    dbo.createCollection("FunnyStories", function(err, res) {
       if (err) throw err;
       console.log("Collection created!");
       db.close();

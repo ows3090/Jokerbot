@@ -3,25 +3,25 @@ const jokedoc = require('../joke_data/jokes.json');
 const dbname =  'jokeapi';
 const collec = 'jokes';
 const dboperation = require('./operations.js');
-var url = "mongodb://localhost:27017/jokeapi";
+var url = "mongodb://13.124.65.242:27017/jokeapi";
 
-//Create database
-MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-  if (err) throw err;
-  console.log("Database created!");
-  db.close();
-});
+// //Create database
+// MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+//   if (err) throw err;
+//   console.log("Database created!");
+//   db.close();
+// });
 
-//Create collection
-MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-    if (err) throw err;
-    var dbo = db.db("jokeapi");
-    dbo.createCollection("jokes", function(err, res) {
-      if (err) throw err;
-      console.log("Collection created!");
-      db.close();
-    });
-  });
+// //Create collection
+// MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+//     if (err) throw err;
+//     var dbo = db.db("jokeapi");
+//     dbo.createCollection("jokes", function(err, res) {
+//       if (err) throw err;
+//       console.log("Collection created!");
+//       db.close();
+//     });
+//   });
 
 
 //Storing data jokes.json data into mongodb

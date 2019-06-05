@@ -3,7 +3,7 @@ const jokedoc = require('../joke_data/reddit_joke.json');
 const dbname =  'redditjoke';
 const collec = 'reddit';
 const dboperation = require('./operations.js');
-var url = "mongodb://localhost:27017/redditjoke";
+var url = "mongodb://13.124.65.242:27017/redditjoke";
 
 //Create database
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -15,7 +15,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 //Create collection
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err;
-    var dbo = db.db("reddit");
+    var dbo = db.db("redditjoke");
     dbo.createCollection("redditjokes", function(err, res) {
       if (err) throw err;
       console.log("Collection created!");

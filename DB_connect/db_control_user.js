@@ -3,7 +3,7 @@ const jokedoc = require('../joke_data/user.json');
 const dbname =  'userdb';
 const collec = 'user';
 const dboperation = require('./operations.js');
-var url = "mongodb://localhost:27017/userdb";
+var url = "mongodb://13.124.65.242:27017/userdb";
 
 //Create database
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
