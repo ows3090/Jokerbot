@@ -15,7 +15,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 //Create collection
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err;
-    var dbo = db.db("redditjoke");
+    var dbo = db.db("reddit");
     dbo.createCollection("redditjokes", function(err, res) {
       if (err) throw err;
       console.log("Collection created!");

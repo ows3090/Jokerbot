@@ -1,9 +1,9 @@
 const MongoClient = require('mongodb').MongoClient;
-const jokedoc = require('../joke_data/Funny_story.json');
-const dbname =  'FunnyStoryapi';
-const collec = 'FunnyStory';
+const jokedoc = require('../joke_data/user.json');
+const dbname =  'userdb';
+const collec = 'user';
 const dboperation = require('./operations.js');
-var url = "mongodb://localhost:27017/FunnyStoryapi";
+var url = "mongodb://localhost:27017/userdb";
 
 //Create database
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -15,8 +15,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 //Create collection
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
     if (err) throw err;
-    var dbo = db.db("FunnyStoryapi");
-    dbo.createCollection("FunnyStory", function(err, res) {
+    var dbo = db.db("userdb");
+    dbo.createCollection("user", function(err, res) {
       if (err) throw err;
       console.log("Collection created!");
       db.close();
@@ -42,3 +42,11 @@ MongoClient.connect(url,{ useNewUrlParser: true }).then((client) => {
 
 })
 .catch((err) => console.log(err));
+
+
+
+
+
+
+
+

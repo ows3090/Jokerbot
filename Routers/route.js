@@ -3,8 +3,9 @@ const SlackBot = require('slackbots'); //link : https://github.com/mishk0/slack-
 const dbname =  'jokeapi';
 const emoji = require('../slack_emoji');
 const url = 'mongodb://localhost:27017/';
-const fs=require('fs');
-message_recieved = 0;
+var url2 = 'mongodb://localhost:27017/userjoke'
+const fs = require('fs');
+//const userjoke = require('./joke_data/user.json');
 
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
@@ -110,7 +111,7 @@ function handleMessage(message, current_channel){
             UserMakeJoke(message,current_channel);
         }  
         else if(message.includes(' me')){
-            comment = "Please use @joker --help to know what I can do!:smile::smile::smile:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
+            comment = "Please use @joker [-help] to know what I can do!:smile::smile::smile:\n You can write type of joke[knock-knock, general, programming, funny story, reddit]";
             bot.postMessageToChannel(current_channel, "Tell you what??? :no_mouth:", emoji.emojis('no_mouth'));
             bot.postMessageToChannel(current_channel, comment, emoji.emojis('flushed'));
         }
@@ -154,6 +155,18 @@ function MakeJoke(message,user_channel){
                     obj=JSON.parse(data);
                     var length=obj.table.length;
                     obj.table.push({id : length+1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
+                    var myobj = {id : length+1, type : 'userjoke', setup : msg[0], punchline : msg[1]};
+                    MongoClient.connect(url2,function(err,db){
+                        if(err) throw err;
+                        var dbo = db.db("userdb");
+                        dbo.collection("user").insertOne(myobj, function(err,res){
+                            if(err) throw err;
+                            console.log("1 insert!!");
+                            db.close;
+                        }) 
+
+                    })
+                    
                     var json=JSON.stringify(obj);
                     fs.writeFile(path,json,'utf8',function(err){
                         if(err){
@@ -169,6 +182,34 @@ function MakeJoke(message,user_channel){
         else{
             console.log("file not exists");
             obj.table.push({id : 1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
+            var myobj = {id : 1, type : 'userjoke', setup : msg[0], punchline : msg[1]};
+                    //Create database
+            MongoClient.connect(url2, { useNewUrlParser: true }, function(err, db) {
+                    if (err) throw err;
+                    console.log("Database created!");
+                    db.close();
+            });
+  
+            //Create collection
+            MongoClient.connect(url2, { useNewUrlParser: true }, function(err, db) {
+                    if (err) throw err;
+                    var dbo = db.db("userdb");
+                    dbo.createCollection("user", function(err, res) {
+                    if (err) throw err;
+                    console.log("Collection created!");
+                     db.close();
+                    });
+                }); 
+            MongoClient.connect(url2,{ useNewUrlParser: true },function(err,db){
+                    if(err) throw err;
+                    var dbo = db.db("userdb");
+                    dbo.collection("user").insertOne(myobj, function(err,res){
+                        if(err) throw err;
+                        console.log("1 insert!!");
+                        db.close;
+                    }) 
+
+            });
             var json=JSON.stringify(obj);
             fs.writeFile(path,json,'utf8',function(err){
                 if(err){
