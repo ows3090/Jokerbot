@@ -126,12 +126,12 @@ function handleMessage(message, current_channel){
     }
     else if(message.includes(' make joke : '))
     {
-        MakeJoke(message);
+        MakeJoke(message,current_channel);
     }
 }
 
 
-function MakeJoke(message){
+function MakeJoke(message,user_channel){
     var obj={
         table:[]
     }
@@ -158,6 +158,8 @@ function MakeJoke(message){
                     });
                 }
             });
+            comment="Sucess making joke!!:+1::thumbsup:\nWhen you use your joke, please enter @jokebot tell-me-userjoke";
+            bot.postMessageToChannel(user_channel,`${comment}:kissing_heart:`,emoji.emojis('nerd_face'));
         }
         else{
             console.log("file not exists");
@@ -169,6 +171,7 @@ function MakeJoke(message){
                 }
                 console.log('완료');
             });
+
         }
     })
    
