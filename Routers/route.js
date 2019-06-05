@@ -10,7 +10,7 @@ message_recieved = 0;
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
-        token : "xoxb-651692943605-645515979745-sqycGNiTIOZNxnly4k1BV1HO",
+        token : "xoxb-651692943605-645515979745-VInZkUepi88jyzhpps44uRyM",
         name : "jokebot"
     });
     
@@ -142,7 +142,7 @@ function MakeJoke(message,user_channel){
     var user=temp[0].substring(2,temp[0].length-1);
     console.log('유저 => '+user);
     
-    var path='./joke_data/'+user+'.json';
+    var path='./joke_data/user.json';
     console.log(path);
     fs.exists(path,function(exists){
         if(exists){
@@ -154,8 +154,8 @@ function MakeJoke(message,user_channel){
                 else{
                     obj=JSON.parse(data);
                     var length=obj.table.length;
-                    obj.table.push({id : length+1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
-                    var myobj = {id : length+1, type : 'userjoke', setup : msg[0], punchline : msg[1]};
+                    obj.table.push({id : length+1, type : user, setup : msg[0], punchline : msg[1]});
+                    var myobj = {id : length+1, type : user, setup : msg[0], punchline : msg[1]};
                     MongoClient.connect(url2,function(err,db){
                         if(err) throw err;
                         var dbo = db.db("userdb");
@@ -181,8 +181,8 @@ function MakeJoke(message,user_channel){
         }
         else{
             console.log("file not exists");
-            obj.table.push({id : 1, type : 'userjoke', setup : msg[0], punchline : msg[1]});
-            var myobj = {id : 1, type : 'userjoke', setup : msg[0], punchline : msg[1]};
+            obj.table.push({id : 1, type : user, setup : msg[0], punchline : msg[1]});
+            var myobj = {id : 1, type : user, setup : msg[0], punchline : msg[1]};
                     //Create database
             MongoClient.connect(url2, { useNewUrlParser: true }, function(err, db) {
                     if (err) throw err;
@@ -387,7 +387,7 @@ redditJoke= (user_channel)=>{
         user.then(function(total){
              title = total.title;
              bot.postMessageToChannel(user_channel, title, emoji.emojis('smiliey'));
-             console.log("질문 불려짐");
+             console.log("quiz~");
              return total;
         })
         .then((all)=>{
@@ -395,7 +395,7 @@ redditJoke= (user_channel)=>{
             //Use setTimeout function to delay the code execution, making sure the user reads the question first and then see the final funny joke
             setTimeout(function secondFunction(){
                 bot.postMessageToChannel(user_channel,`${joke}:stuck_out_tongue_winking_eye::laughing:`,emoji.emojis('laughing'));
-                console.log("허무개그 전송~~~~~~!");
+                console.log("reddit joke~~~");
             },3000);
         })
         client.close();

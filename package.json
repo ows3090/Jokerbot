@@ -11,7 +11,7 @@
   "dependencies": {
     "axios": "^0.18.1",
     "fs": "0.0.1-security",
-    "mongodb": "^3.2.6",
+    "mongodb": "^3.2.7",
     "slackbots": "^1.2.0"
   }
 }
