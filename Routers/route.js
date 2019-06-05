@@ -6,7 +6,7 @@ const url = 'mongodb://localhost:27017/';
 var url2 = 'mongodb://localhost:27017/userjoke'
 const fs = require('fs');
 //const userjoke = require('./joke_data/user.json');
-
+message_recieved = 0;
 exports.startbot = ()=>{
     // Get authorization to use the slackbot
     const bot = new SlackBot({
