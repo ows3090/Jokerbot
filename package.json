@@ -9,7 +9,7 @@
   "author": "Yeonjun Kim",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "fs": "0.0.1-security",
     "mongodb": "^3.2.7",
     "slackbots": "^1.2.0"
